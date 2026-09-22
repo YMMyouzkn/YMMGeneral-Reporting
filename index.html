@@ -1,0 +1,2333 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>YMMAMA YOUZKN — نظام الإبلاغ والإدارة</title>
+  <style>
+    :root {
+      --primary: #1a73e8;
+      --primary-dark: #0d47a1;
+      --success: #0d9f6e;
+      --warning: #f59e0b;
+      --danger: #dc2626;
+      --info: #0284c7;
+      --bg: #f0f4f8;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 4px 20px rgba(0,0,0,0.08);
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, 'Noto Sans Arabic', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .hidden { display: none !important; }
+    .container { max-width: 720px; margin: 0 auto; padding: 16px; }
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    h1, h2, h3 { font-weight: 700; }
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.25rem; margin-bottom: 12px; }
+    h3 { font-size: 1.05rem; margin-bottom: 8px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      margin-top: 8px;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-warning { background: var(--warning); color: #fff; }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+    .btn-sm { padding: 8px 14px; font-size: 0.9rem; width: auto; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+      margin-top: 6px;
+      margin-bottom: 12px;
+      background: #fff;
+      font-family: inherit;
+    }
+    textarea { min-height: 100px; resize: vertical; }
+    label { font-weight: 600; font-size: 0.95rem; display: block; margin-top: 8px; }
+    .form-group { margin-bottom: 4px; }
+    .error-msg { color: var(--danger); font-size: 0.9rem; margin-top: 4px; }
+    .success-msg { color: var(--success); font-size: 0.95rem; }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .status-pending { background: #fef3c7; color: #92400e; }
+    .status-review { background: #dbeafe; color: #1e40af; }
+    .status-resolved { background: #d1fae5; color: #065f46; }
+    .status-rejected { background: #fee2e2; color: #991b1b; }
+    .status-false { background: #f3e8ff; color: #6b21a8; }
+    .status-friendly { background: #ccfbf1; color: #0f766e; }
+    .status-action { background: #ffedd5; color: #9a3412; }
+    .status-new { background: #e0e7ff; color: #3730a3; }
+    .menu-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .menu-item {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px 12px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      border: 2px solid transparent;
+    }
+    .menu-item:hover, .menu-item:active {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+      box-shadow: 0 8px 24px rgba(26,115,232,0.15);
+    }
+    .menu-item .icon { font-size: 2rem; margin-bottom: 8px; }
+    .menu-item .title { font-weight: 700; font-size: 0.95rem; }
+    .header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      padding: 16px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+    .header h1 { font-size: 1.2rem; }
+    .header .user-info { font-size: 0.85rem; opacity: 0.9; margin-top: 4px; }
+    .back-btn {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .list-item {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      border-right: 4px solid var(--primary);
+    }
+    .list-item:hover { background: #f8fafc; }
+    .list-item .meta { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+    .img-preview {
+      max-width: 100%;
+      max-height: 180px;
+      border-radius: 10px;
+      margin-top: 8px;
+      object-fit: contain;
+      background: #f1f5f9;
+    }
+    .img-thumbs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .img-thumbs img {
+      width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border);
+    }
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; padding: 16px;
+    }
+    .modal {
+      background: #fff; border-radius: var(--radius); padding: 20px;
+      max-width: 500px; width: 100%; max-height: 85vh; overflow-y: auto;
+    }
+    .search-results { max-height: 250px; overflow-y: auto; margin-top: 8px; }
+    .search-user {
+      display: flex; align-items: center; gap: 12px; padding: 10px;
+      border-bottom: 1px solid var(--border); cursor: pointer;
+    }
+    .search-user:hover { background: #f1f5f9; }
+    .search-user img {
+      width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: #e2e8f0;
+    }
+    .chat-box {
+      height: 320px; overflow-y: auto; background: #f8fafc;
+      border-radius: 12px; padding: 12px; margin-bottom: 12px;
+      border: 1px solid var(--border);
+    }
+    .msg {
+      margin-bottom: 10px; max-width: 85%;
+      padding: 8px 12px; border-radius: 12px; font-size: 0.95rem;
+    }
+    .msg.me { background: var(--primary); color: #fff; margin-right: auto; border-bottom-left-radius: 4px; }
+    .msg.other { background: #e2e8f0; margin-left: auto; border-bottom-right-radius: 4px; }
+    .msg.admin { background: #fef3c7; border: 1px solid #f59e0b; }
+    .msg .sender { font-size: 0.75rem; opacity: 0.8; margin-bottom: 2px; }
+    .tabs { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+    .tab {
+      padding: 8px 14px; border-radius: 20px; border: none;
+      background: #e2e8f0; cursor: pointer; font-size: 0.85rem; font-weight: 600;
+    }
+    .tab.active { background: var(--primary); color: #fff; }
+    .secret-btn {
+      position: fixed; bottom: 8px; left: 8px;
+      width: 28px; height: 28px; opacity: 0.15;
+      background: transparent; border: none; cursor: pointer; z-index: 50;
+    }
+    .loading {
+      text-align: center; padding: 40px; color: var(--muted);
+    }
+    .spinner {
+      width: 40px; height: 40px; border: 3px solid var(--border);
+      border-top-color: var(--primary); border-radius: 50%;
+      animation: spin 0.8s linear infinite; margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .preview-box {
+      background: #f8fafc; border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px; margin: 12px 0;
+    }
+    .preview-box p { margin-bottom: 6px; }
+    .section-title {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 16px; padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+    }
+    .empty-state {
+      text-align: center; padding: 40px 20px; color: var(--muted);
+    }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+    .chip {
+      display: inline-block; padding: 2px 8px; border-radius: 6px;
+      background: #e0e7ff; color: #3730a3; font-size: 0.8rem; margin-left: 4px;
+    }
+    .admin-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .admin-nav button { flex: 1; min-width: 120px; }
+    .file-input-label {
+      display: block; padding: 12px; border: 2px dashed var(--border);
+      border-radius: 10px; text-align: center; cursor: pointer;
+      color: var(--muted); margin-bottom: 12px;
+    }
+    .file-input-label:hover { border-color: var(--primary); color: var(--primary); }
+    input[type="file"] { display: none; }
+    .row { display: flex; gap: 10px; }
+    .row > * { flex: 1; }
+    @media (max-width: 480px) {
+      .menu-grid { grid-template-columns: 1fr; }
+      .row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- شاشة التحميل -->
+    <div id="screen-loading" class="loading">
+      <div class="spinner"></div>
+      <p>جاري التحميل...</p>
+    </div>
+
+    <!-- تسجيل الدخول -->
+    <div id="screen-login" class="hidden">
+      <div class="header" style="position:relative;">
+        <h1>YMMAMA YOUZKN</h1>
+        <p class="user-info">نظام الإبلاغ والإدارة</p>
+      </div>
+      <div class="container" style="margin-top:24px;">
+        <div class="card">
+          <h2>تسجيل الدخول</h2>
+          <p style="color:var(--muted);font-size:0.9rem;margin-bottom:16px;">استخدم بريدك الإلكتروني المسجل في مجتمع YMM</p>
+          <div class="form-group">
+            <label>البريد الإلكتروني</label>
+            <input type="email" id="login-email" placeholder="example@email.com" autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label>كلمة المرور</label>
+            <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+          </div>
+          <p id="login-error" class="error-msg hidden"></p>
+          <button class="btn btn-primary" id="btn-login">دخول</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- الصفحة الرئيسية -->
+    <div id="screen-home" class="hidden">
+      <div class="header" style="position:relative;">
+        <h1>نظام الإبلاغ والإدارة</h1>
+        <p class="user-info" id="home-user-info"></p>
+        <button class="back-btn" id="btn-logout" style="left:16px;right:auto;">خروج</button>
+      </div>
+      <div class="container" style="margin-top:16px;">
+        <div class="menu-grid">
+          <div class="menu-item" data-nav="report-main">
+            <div class="icon">📢</div>
+            <div class="title">الإبلاغ العام</div>
+          </div>
+          <div class="menu-item" data-nav="my-reports">
+            <div class="icon">📋</div>
+            <div class="title">البلاغات التي عملتها</div>
+          </div>
+          <div class="menu-item" data-nav="my-accusations">
+            <div class="icon">⚖️</div>
+            <div class="title">التهم التي عندي</div>
+          </div>
+          <div class="menu-item" data-nav="thanks">
+            <div class="icon">❤️</div>
+            <div class="title">شكرًا</div>
+          </div>
+          <div class="menu-item" data-nav="copyright">
+            <div class="icon">©️</div>
+            <div class="title">انتهاك حقوق الملكية</div>
+          </div>
+          <div class="menu-item" data-nav="friendly-rooms">
+            <div class="icon">🤝</div>
+            <div class="title">غرفة الإصلاح الودي</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- اختيار نوع البلاغ -->
+    <div id="screen-report-main" class="hidden">
+      <div class="header" style="position:relative;">
+        <button class="back-btn" data-back="home">رجوع</button>
+        <h1>الإبلاغ العام</h1>
+      </div>
+      <div class="container" style="margin-top:16px;">
+        <div class="menu-grid">
+          <div class="menu-item" data-nav="report-user">
+            <div class="icon">👤</div>
+            <div class="title">إبلاغ عن مستخدم</div>
+          </div>
+          <div class="menu-item" data-nav="report-problem">
+            <div class="icon">🛠️</div>
+            <div class="title">إبلاغ عن مشكلة</div>
+          </div>
+          <div class="menu-item" data-nav="report-admin">
+            <div class="icon">🗣️</div>
+            <div class="title">سوء رد من الإدارة</div>
+          </div>
+          <div class="menu-item" data-nav="report-content">
+            <div class="icon">📝</div>
+            <div class="title">منشور أو رسالة مخالفة</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- إبلاغ عن مستخدم -->
+    <div id="screen-report-user" class="hidden">
+      <div class="header" style="position:relative;">
+        <button class="back-btn" data-back="report-main">رجوع</button>
+        <h1>إبلاغ عن مستخدم</h1>
+      </div>
+      <div class="container" style="margin-top:16px;">
+        <div class="card" id="report-user-form">
+          <div class="form-group">
+            <label>اسم المتهم *</label>
+            <div style="display:flex;gap:8px;">
+              <input type="text" id="ru-accused-name" placeholder="اضغط بحث أو اكتب يدويًا" readonly style="flex:1;" />
+              <button class="btn btn-outline btn-sm" id="ru-search-btn" style="width:auto;margin:0;">بحث</button>
+            </div>
+            <input type="hidden" id="ru-accused-uid" />
+            <div id="ru-accused-preview" class="hidden" style="margin-top:8px;display:flex;align-items:center;gap:10px;">
+              <img id="ru-accused-img" src="" style="width:48px;height:48px;border-radius:50%;object-fit:cover;" />
+              <div>
+                <strong id="ru-accused-display"></strong>
+                <div style="font-size:0.8rem;color:var(--muted);" id="ru-accused-meta"></div>
+              </div>
+            </div>
+            <button class="btn btn-outline btn-sm" id="ru-manual-btn" style="margin-top:8px;">كتابة الاسم يدويًا</button>
+            <input type="text" id="ru-manual-name" class="hidden" placeholder="اسم المتهم يدويًا" />
+          </div>
+          <div class="form-group">
+            <label>التطبيق *</label>
+            <select id="ru-app">
+              <option value="">اختر التطبيق</option>
+              <option>YMM Chat</option>
+              <option>YMM Community</option>
+              <option>YMM Store</option>
+              <option>YMM Live</option>
+              <option>تطبيق آخر</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>القسم *</label>
+            <input type="text" id="ru-section" placeholder="مثال: الدردشة العامة" />
+          </div>
+          <div class="form-group">
+            <label>هل المستخدم موثق؟</label>
+            <select id="ru-verified">
+              <option value="غير موثق">غير موثق</option>
+              <option value="زرقاء">علامة زرقاء</option>
+              <option value="صفراء">علامة صفراء</option>
+              <option value="أخرى">علامة أخرى</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>وصف المخالفة *</label>
+            <textarea id="ru-desc" placeholder="اشرح ما حدث بالتفصيل..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>رابط المنشور أو المحتوى (إن وجد)</label>
+            <input type="url" id="ru-link" placeholder="https://..." />
+          </div>
+          <div class="form-group">
+            <label>دليل المخالفة (صور)</label>
+            <label class="file-input-label" for="ru-images">📷 اختر صور الأدلة (يمكن أكثر من صورة)</label>
+            <input type="file" id="ru-images" accept="image/*" multiple />
+            <div class="img-thumbs" id="ru-thumbs"></div>
+          </div>
+          <div class="form-group">
+            <label>البريد الإلكتروني للتواصل *</label>
+            <input type="email" id="ru-email" />
+          </div>
+          <p id="ru-error" class="error-msg hidden"></p>
+          <button class="btn btn-primary" id="ru-preview-btn">معاينة البلاغ</button>
+        </div>
+        <div class="card hidden" id="report-user-preview">
+          <h3>معاينة البلاغ</h3>
+          <div class="preview-box" id="ru-preview-content"></div>
+          <button class="btn btn-success" id="ru-submit-btn">تأكيد وإرسال</button>
+          <button class="btn btn-outline" id="ru-edit-btn">تعديل</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- إبلاغ عن مشكلة -->
+    <div id="screen-report-problem" class="hidden">
+      <div class="header" style="position:relative;">
+        <button class="back-btn" data-back="report-main">رجوع</button>
+        <h1>إبلاغ عن مشكلة</h1>
+      </div>
+      <div class="container" style="margin-top:16px;">
+        <div class="card">
+          <div class="form-group">
+            <label>التطبيق *</label>
+            <select id="rp-app">
+              <option value="">اختر</option>
+              <option>YMM Chat</option>
+              <option>YMM Community</option>
+              <option>YMM Store</option>
+              <option>YMM Live</option>
+              <option>تطبيق آخر</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>القسم *</label>
+            <input type="text" id="rp-section" />
+          </div>
+          <div class="form-group">
+            <label>وصف المشكلة *</label>
+            <textarea id="rp-desc"></textarea>
+          </div>
+          <div class="form-group">
+            <label>صورة / لقطة شاشة</label>
+            <label class="file-input-label" for="rp-images">📷 اختر صورة</label>
+            <input type="file" id="rp-images" accept="image/*" multiple />
+            <div class="img-thumbs" id="rp-thumbs"></div>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label>اليوم</label>
+              <input type="number" id="rp-day" min="1" max="31" />
+            </div>
+            <div class="form-group">
+              <label>الشهر</label>
+              <input type="number" id="rp-month" min="1" max="12" />
+            </div>
+            <div class="form-group">
+              <label>السنة</label>
+              <input type="number" id="rp-year" min="2020" max="2030" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label>الساعة</label>
+              <input type="number" id="rp-hour" min="0" max="23" />
+            </div>
+            <div class="form-group">
+              <label>الدقيقة</label>
+              <input type="number" id="rp-minute" min="0" max="59" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>البريد للتواصل *</label>
+            <input type="email" id="rp-email" />
+          </div>
+          <p id="rp-error" class="error-msg hidden"></p>
+          <button class="btn btn-primary" id="rp-submit">إرسال البلاغ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- سوء رد من الإدارة -->
+    <div id="screen-report-admin" class="hidden">
+      <div class="header" style="position:relative;">
+        <button class="back-btn" data-back="report-main">رجوع</button>
+        <h1>إبلاغ عن سوء رد من الإدارة</h1>
+      </div>
+      <div class="container" style="margin-top:16px;">
+        <div class="card">
+          <div class="form-group">
+            <label>التطبيق *</label>
+            <select id="ra-app">
+              <option value="">اختر</option>
+              <option>YMM Chat</option>
+              <option>YMM Community</option>
+              <option>YMM Store</option>
+              <option>YMM Live</option>
+              <option>تطبيق آخر</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>اسم أو معرف الإداري (إن عرف)</label>
+            <input type="text" id="ra-admin-name" />
+          </div>
+          <div class="form-group">
+            <label>وصف ما حدث *</label>
+            <textarea id="ra-desc"></textarea>
+          </div>
+          <div class="form-group">
+            <label>نص الرد إن أمكن</label>
+            <textarea id="ra-reply-text"></textarea>
+          </div>
+          <div class="form-group">
+            <label>صورة المحادثة أو الرد</label>
+            <label class="file-input-label" for="ra-images">📷 اختر صورة</label>
+            <input type="file" id="ra-images" accept="image/*" multiple />
+            <div class="img-thumbs" id="ra-thumbs"></div>
+          </div>
+          <div class="row">
+            <div class="form-group"><label>الثانية</label><input type="number" id="ra-sec" min="0" max="59" /></div>
+            <div class="form-group"><label>الدقيقة</label><input type="number" id="ra-min" min="0" max="59" /></div>
+            <div class="form-group"><label>الساعة</label><input type="number" id="ra-hour" min="0" max="23" /></div>
+          </div>
+          <div class="row">
+            <div class="form-group"><label>اليوم</label><input type="number" id="ra-day" min="1" max="31" /></div>
+            <div class="form-group"><label>الأسبوع</label><input type="number" id="ra-week" min="1" max="5" /></div>
+            <div class="form-group"><label>الشهر</label><input type="number" id="ra-month" min="1" max="12" /></div>
+            <div class="form-group"><label>السنة</label><input type="number" id="ra-year" min="2020" max="2030" /></div>
+          </div>
+          <div class="form-group">
+            <label>البريد للتواصل *</label>
+            <input type="email" id="ra-email" />
+          </div>
+          <p id="ra-error" class="error-msg hidden"></p>
+          <button class="btn btn-primary" id="ra-submit">إرسال البلاغ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- إبلاغ عن محتوى -->
+    <div id="screen-report-content" class="hidden">
+      <div class="header" style="position:relative;">
+        <button class="back-btn" data-back="report-main">رجوع</button>
+        <h1>إبلاغ عن منشور أو رسالة مخالفة</h1>
+      </div>
+      <div class="container" style="margin-top:16px;">
+        <div class="card">
+          <div class="form-group">
+            <label>نوع المحتوى *</label>
+            <select id="rc-type">
+              <option value="منشور">منشور</option>
+              <option value="رسالة">رسالة</option>
+              <option value="تعليق">تعليق</option>
+              <option value="محتوى آخر">محتوى آخر</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>نوع المخالفة *</label>
+            <select id="rc-violation">
+              <option value="كراهية">كراهية</option>
+              <option value="عنصرية">عنصرية</option>
+              <option value="عنف">عنف</option>
+              <option value="تهديد">تهديد</option>
+              <option value="محتوى جنسي">محتوى جنسي</option>
+              <option value="مخالفة أخرى">مخالفة أخرى</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>التطبيق *</label>
+            <select id="rc-app">
+              <option value="">اختر</option>
+              <option>YMM Chat</option>
+              <option>YMM Community</option>
+              <option>YMM Store</option>
+              <option>YMM Live</option>
+              <option>تطبيق آخر</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>مكان المحتوى</label>
+            <input type="text" id="rc-place" />
+          </div>
+          <div class="form-group">
+            <label>اسم من كتب المحتوى</label>
+            <input type="text" id="rc-author" />
+          </div>
+          <div class="form-group">
+            <label>وصف المخالفة *</label>
+            <textarea id="rc-desc"></textarea>
+          </div>
+          <div class="form-group">
+            <label>رابط المحتوى (إن وجد)</label>
+            <input type="url" id="rc-link" />
+          </div>
+          <div class="form-group">
+            <label>صورة المحتوى / الملف الشخصي</label>
+            <label class="file-input-label" for="rc-images">📷 اختر صور</label>
+            <input type="file" id="rc-images" accept="image/*" multiple />
+            <div class="img-thumbs" id="rc-thumbs"></div>
+          </div>
+          <div class="form-group">
+            <label>البريد للتواصل *</label>
+            <input type="email" id="rc-email" />
+          </div>
+          <p id="rc-error" class="error-msg hidden"></p>
+          <button class="btn btn-primary" id="rc-submit">إرسال البلاغ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- انتهاك حقوق الملكية -->
+    <div id="screen-copyright" class="hidden">
+      <div class="header" style="position:relative;">
+        <button class="back-btn" data-back="home">رجوع</button>
+        <h1>انتهاك حقوق الملكية</h1>
+      </div>
+      <div class="container" style="margin-top:16px;">
+        <div class="card">
+          <div class="form-group">
+            <label>نوع الانتهاك *</label>
+            <select id="cr-type">
+              <option value="أخذ معلومات حسابي دون إذني">أخذ معلومات حسابي دون إذني</option>
+              <option value="سرقة منشور دون إذني">سرقة منشور دون إذني</option>
+              <option value="سرقة فيديو دون إذني">سرقة فيديو دون إذني</option>
+              <option value="سرقة منتج دون إذني">سرقة منتج دون إذني</option>
+              <option value="نسخ محتوى آخر دون إذن">نسخ محتوى آخر دون إذن</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>اسم صاحب الحق *</label>
+            <input type="text" id="cr-owner-name" />
+          </div>
+          <div class="form-group">
+            <label>حساب صاحب الحق</label>
+            <input type="text" id="cr-owner-account" />
+          </div>
+          <div class="form-group">
+            <label>اسم المتهم *</label>
+            <div style="display:flex;gap:8px;">
+              <input type="text" id="cr-accused-name" placeholder="اضغط بحث أو اكتب يدويًا" readonly style="flex:1;" />
+              <button class="btn btn-outline btn-sm" id="cr-search-btn" style="width:auto;margin:0;">بحث</button>
+            </div>
+            <input type="hidden" id="cr-accused-uid" />
+            <div id="cr-accused-preview" class="hidden" style="margin-top:8px;display:flex;align-items:center;gap:10px;">
+              <img id="cr-accused-img" src="" style="width:48px;height:48px;border-radius:50%;object-fit:cover;" />
+              <div><strong id="cr-accused-display"></strong></div>
+            </div>
+            <button class="btn btn-outline btn-sm" id="cr-manual-btn" style="margin-top:8px;">كتابة يدويًا</button>
+            <input type="text" id="cr-manual-name" class="hidden" placeholder="اسم المتهم يدويًا" />
+          </div>
+          <div class="form-group">
+            <label>التطبيق *</label>
+            <select id="cr-app">
+              <option value="">اختر</option>
+              <option>YMM Chat</option>
+              <option>YMM Community</option>
+              <option>YMM Store</option>
+              <option>YMM Live</option>
+              <option>تطبيق آخر</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>رابط المحتوى الأصلي</label>
+            <input type="url" id="cr-orig-link" />
+          </div>
+          <div class="form-group">
+            <label>رابط المحتوى المنسوخ</label>
+            <input type="url" id="cr-copy-link" />
+          </div>
+          <div class="form-group">
+            <label>وصف الانتهاك *</label>
+            <textarea id="cr-desc"></textarea>
+          </div>
+          <div class="form-group">
+            <label>دليل الملكية / صور</label>
+            <label class="file-input-label" for="cr-images">📷 اختر صور الأدلة</label>
+            <input type="file" id="cr-images" accept="image/*" multiple />
+            <div class="img-thumbs" id="cr-thumbs"></div>
+          </div>
+          <div class="form-group">
+            <label>البريد للتواصل *</label>
+            <input type="email" id="cr-email" />
+          </div>
+          <p id="cr-error" class="error-msg hidden"></p>
+          <button class="btn btn-primary" id="cr-submit">إرسال بلاغ حقوق الملكية</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- البلاغات التي عملتها -->
+    <div id="screen-my-reports" class="hidden">
+      <div class="header" style="position:relative;">
+        <button class="back-btn" data-back="home">رجوع</button>
+        <h1>البلاغات التي عملتها</h1>
+      </div>
+      <div class="container" style="margin-top:16px;">
+        <div class="tabs" id="my-reports-tabs">
+          <button class="tab active" data-filter="all">الكل</button>
+          <button class="tab" data-filter="قيد الرؤية من الإدارة">قيد الرؤية</button>
+          <button class="tab" data-filter="قيد المراجعة">قيد المراجعة</button>
+          <button class="tab" data-filter="محلول">محلول</button>
+          <button class="tab" data-filter="مرفوضة">مرفوضة</button>
+          <button class="tab" data-filter="اتهام باطل">اتهام باطل</button>
+          <button class="tab" data-filter="يجب عمل إصلاح ودي">إصلاح ودي</button>
+          <button class="tab" data-filter="يجب استدعاء المتهم قانونيًا">استدعاء</button>
+        </div>
+        <div id="my-reports-list"></div>
+      </div>
+    </div>
+
+    <!-- التهم التي عندي -->
+    <div id="screen-my-accusations" class="hidden">
+      <div class="header" style="position:relative;">
+        <button class="back-btn" data-back="home">رجوع</button>
+        <h1>التهم التي عندي</h1>
+      </div>
+      <div class="container" style="margin-top:16px;">
+        <div id="my-accusations-list"></div>
+      </div>
+    </div>
+
+    <!-- تفاصيل بلاغ / اتهام -->
+    <div id="screen-report-detail" class="hidden">
+      <div class="header" style="position:relative;">
+        <button class="back-btn" data-back="my-reports">رجوع</button>
+        <h1 id="detail-title">تفاصيل البلاغ</h1>
+      </div>
+      <div class="container" style="margin-top:16px;">
+        <div class="card" id="detail-content"></div>
+        <div class="card hidden" id="detail-actions"></div>
+      </div>
+    </div>
+
+    <!-- شكرًا -->
+    <div id="screen-thanks" class="hidden">
+      <div class="header" style="position:relative;">
+        <button class="back-btn" data-back="home">رجوع</button>
+        <h1>شكرًا ❤️</h1>
+      </div>
+      <div class="container" style="margin-top:16px;">
+        <div id="thanks-list"></div>
+      </div>
+    </div>
+
+    <!-- غرف الإصلاح الودي -->
+    <div id="screen-friendly-rooms" class="hidden">
+      <div class="header" style="position:relative;">
+        <button class="back-btn" data-back="home">رجوع</button>
+        <h1>غرفة الإصلاح الودي</h1>
+      </div>
+      <div class="container" style="margin-top:16px;">
+        <div id="friendly-rooms-list"></div>
+      </div>
+    </div>
+
+    <!-- دردشة غرفة الإصلاح -->
+    <div id="screen-friendly-chat" class="hidden">
+      <div class="header" style="position:relative;">
+        <button class="back-btn" data-back="friendly-rooms">رجوع</button>
+        <h1 id="chat-title">غرفة الإصلاح</h1>
+      </div>
+      <div class="container" style="margin-top:12px;">
+        <div class="chat-box" id="chat-messages"></div>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="chat-input" placeholder="اكتب رسالتك..." style="margin:0;flex:1;" />
+          <button class="btn btn-primary btn-sm" id="chat-send" style="width:auto;margin:0;">إرسال</button>
+        </div>
+        <div id="chat-admin-actions" class="hidden" style="margin-top:12px;"></div>
+      </div>
+    </div>
+
+    <!-- لوحة الإدارة -->
+    <div id="screen-admin-login" class="hidden">
+      <div class="header"><h1>دخول الإدارة</h1></div>
+      <div class="container" style="margin-top:24px;">
+        <div class="card">
+          <p style="color:var(--muted);margin-bottom:12px;">يجب أن تكون مسجلاً كإداري في النظام</p>
+          <div class="form-group">
+            <label>كلمة مرور الإدارة</label>
+            <input type="password" id="admin-pass" placeholder="••••••••" />
+          </div>
+          <p id="admin-login-error" class="error-msg hidden"></p>
+          <button class="btn btn-primary" id="btn-admin-login">دخول</button>
+          <button class="btn btn-outline" data-back="home">إلغاء</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="screen-admin" class="hidden">
+      <div class="header" style="position:relative;">
+        <button class="back-btn" data-back="home">خروج الإدارة</button>
+        <h1>لوحة الإدارة</h1>
+      </div>
+      <div class="container" style="margin-top:16px;">
+        <div class="admin-nav">
+          <button class="btn btn-outline btn-sm admin-tab active" data-atab="reports">البلاغات</button>
+          <button class="btn btn-outline btn-sm admin-tab" data-atab="accusations">التهم</button>
+          <button class="btn btn-outline btn-sm admin-tab" data-atab="friendly">الإصلاح الودي</button>
+          <button class="btn btn-outline btn-sm admin-tab" data-atab="thanks">الشكر</button>
+          <button class="btn btn-outline btn-sm admin-tab" data-atab="copyright">حقوق الملكية</button>
+          <button class="btn btn-outline btn-sm admin-tab" data-atab="logs">سجل العمليات</button>
+        </div>
+        <div id="admin-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- مودال البحث عن مستخدم -->
+  <div id="modal-user-search" class="modal-overlay hidden">
+    <div class="modal">
+      <h3>بحث عن مستخدم</h3>
+      <input type="text" id="user-search-input" placeholder="اسم المستخدم أو البريد..." />
+      <div class="search-results" id="user-search-results"></div>
+      <button class="btn btn-outline" id="close-user-search" style="margin-top:12px;">إغلاق</button>
+    </div>
+  </div>
+
+  <!-- مودال عام -->
+  <div id="modal-generic" class="modal-overlay hidden">
+    <div class="modal" id="modal-generic-body"></div>
+  </div>
+
+  <button class="secret-btn" id="secret-admin-btn" title=""></button>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+    import { getDatabase, ref, set, get, push, update, onValue, query, orderByChild, equalTo, child } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDTsnFVRRas32lIdqKM8TnglNW1-VYTspQ",
+      authDomain: "ymmai-59c6c.firebaseapp.com",
+      databaseURL: "https://ymmai-59c6c-default-rtdb.firebaseio.com",
+      projectId: "ymmai-59c6c",
+      storageBucket: "ymmai-59c6c.firebasestorage.app",
+      messagingSenderId: "598941300583",
+      appId: "1:598941300583:web:fc6c2ffc0dcd7cd5ffa1c2",
+      measurementId: "G-VH0FYKGRJ8"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // ========== حالة التطبيق ==========
+    let currentUser = null;
+    let userProfile = null;
+    let isAdmin = false;
+    let currentReportImages = [];
+    let searchContext = null; // 'ru' | 'cr'
+    let currentChatRoomId = null;
+    let chatUnsub = null;
+    let detailBackScreen = 'my-reports';
+    let reportCounterCache = null;
+
+    // ========== أدوات مساعدة ==========
+    function $(id) { return document.getElementById(id); }
+    function show(id) {
+      document.querySelectorAll('[id^="screen-"]').forEach(el => el.classList.add('hidden'));
+      const el = $(id);
+      if (el) el.classList.remove('hidden');
+      window.scrollTo(0, 0);
+    }
+    function showModal(id) { $(id).classList.remove('hidden'); }
+    function hideModal(id) { $(id).classList.add('hidden'); }
+
+    function toast(msg, type = 'info') {
+      const m = $('modal-generic');
+      const body = $('modal-generic-body');
+      body.innerHTML = `<p style="text-align:center;padding:12px;">${msg}</p><button class="btn btn-primary" onclick="document.getElementById('modal-generic').classList.add('hidden')">حسنًا</button>`;
+      showModal('modal-generic');
+    }
+
+    function statusBadge(status) {
+      const map = {
+        'قيد الرؤية من الإدارة': 'status-pending',
+        'قيد المراجعة': 'status-review',
+        'محلول': 'status-resolved',
+        'تم الحل': 'status-resolved',
+        'مرفوضة': 'status-rejected',
+        'اتهام باطل': 'status-false',
+        'يجب عمل إصلاح ودي': 'status-friendly',
+        'يجب استدعاء المتهم قانونيًا': 'status-action',
+        'بلاغ جديد': 'status-new',
+        'يحتاج معلومات': 'status-pending',
+        'إصلاح ودي': 'status-friendly',
+        'لم يتم الحل': 'status-rejected',
+        'تم اتخاذ إجراء': 'status-action',
+        'جديد': 'status-new'
+      };
+      const cls = map[status] || 'status-pending';
+      return `<span class="status-badge ${cls}">${status || '—'}</span>`;
+    }
+
+    function nowISO() { return new Date().toISOString(); }
+    function formatDate(iso) {
+      if (!iso) return '—';
+      try {
+        const d = new Date(iso);
+        return d.toLocaleString('ar-SA', { dateStyle: 'medium', timeStyle: 'short' });
+      } catch { return iso; }
+    }
+
+    // تحويل الصور إلى Base64 مع ضغط بسيط
+    function filesToBase64(files, maxSize = 400000) {
+      return Promise.all(Array.from(files).map(file => {
+        return new Promise((resolve, reject) => {
+          if (file.size > 2 * 1024 * 1024) {
+            // ضغط عبر canvas إذا كانت كبيرة
+            const img = new Image();
+            const url = URL.createObjectURL(file);
+            img.onload = () => {
+              const canvas = document.createElement('canvas');
+              let w = img.width, h = img.height;
+              const maxDim = 800;
+              if (w > maxDim || h > maxDim) {
+                if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+                else { w = Math.round(w * maxDim / h); h = maxDim; }
+              }
+              canvas.width = w; canvas.height = h;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              let quality = 0.7;
+              let data = canvas.toDataURL('image/jpeg', quality);
+              while (data.length > maxSize && quality > 0.3) {
+                quality -= 0.1;
+                data = canvas.toDataURL('image/jpeg', quality);
+              }
+              URL.revokeObjectURL(url);
+              resolve(data);
+            };
+            img.onerror = reject;
+            img.src = url;
+          } else {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          }
+        });
+      }));
+    }
+
+    function setupImageInput(inputId, thumbsId) {
+      const input = $(inputId);
+      const thumbs = $(thumbsId);
+      input.addEventListener('change', async () => {
+        thumbs.innerHTML = '';
+        if (!input.files.length) return;
+        try {
+          const b64s = await filesToBase64(input.files);
+          currentReportImages = b64s;
+          b64s.forEach(src => {
+            const img = document.createElement('img');
+            img.src = src;
+            thumbs.appendChild(img);
+          });
+        } catch (e) {
+          toast('خطأ في تحميل الصور');
+        }
+      });
+    }
+
+    // ========== رقم بلاغ فريد ==========
+    async function generateReportId() {
+      const counterRef = ref(db, 'counters/reports');
+      const snap = await get(counterRef);
+      let num = 1;
+      if (snap.exists()) num = (snap.val() || 0) + 1;
+      await set(counterRef, num);
+      return 'YMM-REPORT-' + String(num).padStart(6, '0');
+    }
+
+    // ========== جلب ملف المستخدم ==========
+    async function loadUserProfile(uid) {
+      // نبحث في عدة مسارات محتملة حسب نظام YMM
+      const paths = [
+        `users/${uid}`,
+        `Users/${uid}`,
+        `communityUsers/${uid}`,
+        `profiles/${uid}`
+      ];
+      for (const p of paths) {
+        const snap = await get(ref(db, p));
+        if (snap.exists()) {
+          const d = snap.val();
+          return {
+            uid,
+            name: d.name || d.displayName || d.username || d.userName || d.fullName || 'مستخدم',
+            age: d.age || d.Age || null,
+            email: d.email || currentUser.email,
+            photo: d.photo || d.photoURL || d.avatar || d.image || null,
+            verified: d.verified || d.badge || null,
+            raw: d
+          };
+        }
+      }
+      // إذا لم يوجد، ننشئ ملفًا أساسيًا
+      const basic = {
+        uid,
+        name: currentUser.displayName || currentUser.email.split('@')[0],
+        age: null,
+        email: currentUser.email,
+        photo: currentUser.photoURL || null,
+        verified: null
+      };
+      await set(ref(db, `users/${uid}`), {
+        name: basic.name,
+        email: basic.email,
+        createdAt: nowISO(),
+        uid
+      });
+      return basic;
+    }
+
+    // ========== التحقق من صلاحية الإدارة ==========
+    async function checkAdmin(uid) {
+      const snap = await get(ref(db, `adminUsers/${uid}`));
+      if (snap.exists() && snap.val().active !== false) return true;
+      // دعم قائمة إيميلات إدارية اختيارية
+      const emailSnap = await get(ref(db, 'adminEmails'));
+      if (emailSnap.exists()) {
+        const emails = emailSnap.val();
+        if (Array.isArray(emails) && emails.includes(currentUser.email)) return true;
+        if (typeof emails === 'object' && emails[currentUser.email]) return true;
+      }
+      return false;
+    }
+
+    // ========== تسجيل الدخول ==========
+    $('btn-login').addEventListener('click', async () => {
+      const email = $('login-email').value.trim();
+      const pass = $('login-password').value;
+      const err = $('login-error');
+      err.classList.add('hidden');
+      if (!email || !pass) {
+        err.textContent = 'أدخل البريد وكلمة المرور';
+        err.classList.remove('hidden');
+        return;
+      }
+      try {
+        $('btn-login').disabled = true;
+        await signInWithEmailAndPassword(auth, email, pass);
+      } catch (e) {
+        err.textContent = 'فشل الدخول: تأكد من البريد وكلمة المرور المسجلين في مجتمع YMM';
+        err.classList.remove('hidden');
+        $('btn-login').disabled = false;
+      }
+    });
+
+    $('btn-logout').addEventListener('click', () => signOut(auth));
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        try {
+          userProfile = await loadUserProfile(user.uid);
+          isAdmin = await checkAdmin(user.uid);
+          $('home-user-info').textContent = `${userProfile.name} • ${user.email}`;
+          // تعبئة البريد في النماذج
+          ['ru-email','rp-email','ra-email','rc-email','cr-email'].forEach(id => {
+            const el = $(id);
+            if (el) el.value = user.email;
+          });
+          show('screen-home');
+        } catch (e) {
+          console.error(e);
+          show('screen-home');
+        }
+      } else {
+        currentUser = null;
+        userProfile = null;
+        isAdmin = false;
+        show('screen-login');
+      }
+      $('screen-loading').classList.add('hidden');
+    });
+
+    // ========== التنقل ==========
+    document.querySelectorAll('[data-nav]').forEach(el => {
+      el.addEventListener('click', () => {
+        const nav = el.getAttribute('data-nav');
+        if (nav === 'my-reports') loadMyReports();
+        if (nav === 'my-accusations') loadMyAccusations();
+        if (nav === 'thanks') loadThanks();
+        if (nav === 'friendly-rooms') loadFriendlyRooms();
+        show('screen-' + nav);
+      });
+    });
+
+    document.querySelectorAll('[data-back]').forEach(el => {
+      el.addEventListener('click', () => {
+        const back = el.getAttribute('data-back');
+        if (back === 'home') show('screen-home');
+        else if (back === 'report-main') show('screen-report-main');
+        else if (back === 'my-reports') { loadMyReports(); show('screen-my-reports'); }
+        else if (back === 'friendly-rooms') { loadFriendlyRooms(); show('screen-friendly-rooms'); }
+        else show('screen-' + back);
+      });
+    });
+
+    // ========== بحث المستخدمين ==========
+    function openUserSearch(ctx) {
+      searchContext = ctx;
+      $('user-search-input').value = '';
+      $('user-search-results').innerHTML = '<p style="color:var(--muted);padding:12px;">اكتب للبحث...</p>';
+      showModal('modal-user-search');
+    }
+
+    $('ru-search-btn').addEventListener('click', () => openUserSearch('ru'));
+    $('cr-search-btn').addEventListener('click', () => openUserSearch('cr'));
+    $('close-user-search').addEventListener('click', () => hideModal('modal-user-search'));
+
+    let searchTimeout = null;
+    $('user-search-input').addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(doUserSearch, 400);
+    });
+
+    async function doUserSearch() {
+      const q = $('user-search-input').value.trim().toLowerCase();
+      const results = $('user-search-results');
+      if (q.length < 2) {
+        results.innerHTML = '<p style="color:var(--muted);padding:12px;">اكتب حرفين على الأقل</p>';
+        return;
+      }
+      results.innerHTML = '<div class="spinner" style="width:24px;height:24px;"></div>';
+      try {
+        // البحث في users
+        const snap = await get(ref(db, 'users'));
+        const list = [];
+        if (snap.exists()) {
+          snap.forEach(child => {
+            const u = child.val();
+            const uid = child.key;
+            const name = (u.name || u.displayName || u.username || '').toLowerCase();
+            const email = (u.email || '').toLowerCase();
+            if (name.includes(q) || email.includes(q) || uid.includes(q)) {
+              list.push({
+                uid,
+                name: u.name || u.displayName || u.username || 'مستخدم',
+                email: u.email || '',
+                photo: u.photo || u.photoURL || u.avatar || null,
+                verified: u.verified || u.badge || null
+              });
+            }
+          });
+        }
+        // مسارات إضافية
+        for (const path of ['Users', 'communityUsers', 'profiles']) {
+          try {
+            const s = await get(ref(db, path));
+            if (s.exists()) {
+              s.forEach(child => {
+                const u = child.val();
+                const uid = child.key;
+                if (list.some(x => x.uid === uid)) return;
+                const name = (u.name || u.displayName || u.username || '').toLowerCase();
+                const email = (u.email || '').toLowerCase();
+                if (name.includes(q) || email.includes(q)) {
+                  list.push({
+                    uid,
+                    name: u.name || u.displayName || u.username || 'مستخدم',
+                    email: u.email || '',
+                    photo: u.photo || u.photoURL || u.avatar || null,
+                    verified: u.verified || null
+                  });
+                }
+              });
+            }
+          } catch (_) {}
+        }
+
+        if (!list.length) {
+          results.innerHTML = '<p style="padding:12px;color:var(--muted);">لم يتم العثور على مستخدم. يمكنك كتابة الاسم يدويًا.</p>';
+          return;
+        }
+        results.innerHTML = list.slice(0, 30).map(u => `
+          <div class="search-user" data-uid="${u.uid}" data-name="${u.name}" data-photo="${u.photo || ''}" data-email="${u.email}" data-verified="${u.verified || ''}">
+            <img src="${u.photo || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><rect fill=%22%23e2e8f0%22 width=%2240%22 height=%2240%22/><text x=%2220%22 y=%2225%22 text-anchor=%22middle%22 fill=%22%2364748b%22 font-size=%2216%22>👤</text></svg>'}" alt="" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><rect fill=%22%23e2e8f0%22 width=%2240%22 height=%2240%22/></svg>'" />
+            <div>
+              <strong>${u.name}</strong>
+              <div style="font-size:0.8rem;color:var(--muted);">${u.email || u.uid.slice(0,12)}</div>
+            </div>
+          </div>
+        `).join('');
+
+        results.querySelectorAll('.search-user').forEach(el => {
+          el.addEventListener('click', () => selectUser(el));
+        });
+      } catch (e) {
+        results.innerHTML = '<p class="error-msg">خطأ في البحث</p>';
+      }
+    }
+
+    function selectUser(el) {
+      const uid = el.dataset.uid;
+      const name = el.dataset.name;
+      const photo = el.dataset.photo;
+      const verified = el.dataset.verified;
+      if (searchContext === 'ru') {
+        $('ru-accused-uid').value = uid;
+        $('ru-accused-name').value = name;
+        $('ru-manual-name').classList.add('hidden');
+        $('ru-accused-preview').classList.remove('hidden');
+        $('ru-accused-display').textContent = name;
+        $('ru-accused-meta').textContent = verified ? `موثق: ${verified}` : 'غير موثق';
+        $('ru-accused-img').src = photo || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 48 48%22><rect fill=%22%23e2e8f0%22 width=%2248%22 height=%2248%22/></svg>';
+        if (verified) $('ru-verified').value = verified.includes('زرق') ? 'زرقاء' : verified.includes('صفر') ? 'صفراء' : 'أخرى';
+      } else if (searchContext === 'cr') {
+        $('cr-accused-uid').value = uid;
+        $('cr-accused-name').value = name;
+        $('cr-manual-name').classList.add('hidden');
+        $('cr-accused-preview').classList.remove('hidden');
+        $('cr-accused-display').textContent = name;
+        $('cr-accused-img').src = photo || '';
+      }
+      hideModal('modal-user-search');
+    }
+
+    $('ru-manual-btn').addEventListener('click', () => {
+      $('ru-manual-name').classList.remove('hidden');
+      $('ru-accused-name').value = '';
+      $('ru-accused-uid').value = '';
+      $('ru-accused-preview').classList.add('hidden');
+    });
+    $('cr-manual-btn').addEventListener('click', () => {
+      $('cr-manual-name').classList.remove('hidden');
+      $('cr-accused-name').value = '';
+      $('cr-accused-uid').value = '';
+      $('cr-accused-preview').classList.add('hidden');
+    });
+
+    // ========== إعداد مدخلات الصور ==========
+    setupImageInput('ru-images', 'ru-thumbs');
+    setupImageInput('rp-images', 'rp-thumbs');
+    setupImageInput('ra-images', 'ra-thumbs');
+    setupImageInput('rc-images', 'rc-thumbs');
+    setupImageInput('cr-images', 'cr-thumbs');
+
+    // ========== حفظ بلاغ عام ==========
+    async function saveReport(data) {
+      const reportId = await generateReportId();
+      const report = {
+        ...data,
+        reportId,
+        reporterUid: currentUser.uid,
+        reporterName: userProfile.name,
+        reporterEmail: currentUser.email,
+        createdAt: nowISO(),
+        updatedAt: nowISO(),
+        status: 'قيد الرؤية من الإدارة',
+        statusHistory: [{
+          status: 'قيد الرؤية من الإدارة',
+          at: nowISO(),
+          by: currentUser.uid,
+          note: 'إنشاء البلاغ'
+        }]
+      };
+      await set(ref(db, `reports/${reportId}`), report);
+
+      // إذا كان هناك متهم بـ UID
+      if (data.accusedUid) {
+        await set(ref(db, `accusations/${data.accusedUid}/${reportId}`), {
+          reportId,
+          status: 'بلاغ جديد',
+          createdAt: nowISO(),
+          type: data.type
+        });
+      }
+
+      // إشعار
+      await push(ref(db, `notifications/${currentUser.uid}`), {
+        type: 'report_created',
+        reportId,
+        message: `تم إنشاء بلاغك رقم ${reportId}`,
+        at: nowISO(),
+        read: false
+      });
+
+      return reportId;
+    }
+
+    // ========== معاينة وإرسال إبلاغ مستخدم ==========
+    $('ru-preview-btn').addEventListener('click', () => {
+      const name = $('ru-manual-name').classList.contains('hidden')
+        ? $('ru-accused-name').value
+        : $('ru-manual-name').value;
+      const app = $('ru-app').value;
+      const section = $('ru-section').value;
+      const desc = $('ru-desc').value;
+      const email = $('ru-email').value;
+      const err = $('ru-error');
+      if (!name || !app || !section || !desc || !email) {
+        err.textContent = 'املأ الحقول الإلزامية (*)';
+        err.classList.remove('hidden');
+        return;
+      }
+      err.classList.add('hidden');
+      const html = `
+        <p><strong>المتهم:</strong> ${name}</p>
+        <p><strong>التطبيق:</strong> ${app}</p>
+        <p><strong>القسم:</strong> ${section}</p>
+        <p><strong>التوثيق:</strong> ${$('ru-verified').value}</p>
+        <p><strong>الوصف:</strong> ${desc}</p>
+        <p><strong>الرابط:</strong> ${$('ru-link').value || '—'}</p>
+        <p><strong>البريد:</strong> ${email}</p>
+        <p><strong>عدد الأدلة:</strong> ${currentReportImages.length}</p>
+        ${currentReportImages.map(s => `<img class="img-preview" src="${s}" />`).join('')}
+      `;
+      $('ru-preview-content').innerHTML = html;
+      $('report-user-form').classList.add('hidden');
+      $('report-user-preview').classList.remove('hidden');
+    });
+
+    $('ru-edit-btn').addEventListener('click', () => {
+      $('report-user-preview').classList.add('hidden');
+      $('report-user-form').classList.remove('hidden');
+    });
+
+    $('ru-submit-btn').addEventListener('click', async () => {
+      const btn = $('ru-submit-btn');
+      btn.disabled = true;
+      try {
+        const name = $('ru-manual-name').classList.contains('hidden')
+          ? $('ru-accused-name').value
+          : $('ru-manual-name').value;
+        const reportId = await saveReport({
+          type: 'user',
+          typeLabel: 'إبلاغ عن مستخدم',
+          accusedName: name,
+          accusedUid: $('ru-accused-uid').value || null,
+          accusedPhoto: $('ru-accused-img').src || null,
+          app: $('ru-app').value,
+          section: $('ru-section').value,
+          verified: $('ru-verified').value,
+          description: $('ru-desc').value,
+          link: $('ru-link').value || null,
+          contactEmail: $('ru-email').value,
+          evidence: currentReportImages.slice(0, 5) // حد أقصى 5 صور
+        });
+        currentReportImages = [];
+        toast(`تم إرسال البلاغ بنجاح\nرقم البلاغ: ${reportId}`);
+        $('report-user-preview').classList.add('hidden');
+        $('report-user-form').classList.remove('hidden');
+        // تفريغ
+        ['ru-accused-name','ru-accused-uid','ru-section','ru-desc','ru-link','ru-manual-name'].forEach(id => { if ($(id)) $(id).value = ''; });
+        $('ru-accused-preview').classList.add('hidden');
+        $('ru-thumbs').innerHTML = '';
+        $('ru-images').value = '';
+        show('screen-home');
+      } catch (e) {
+        console.error(e);
+        toast('حدث خطأ أثناء الإرسال: ' + e.message);
+      }
+      btn.disabled = false;
+    });
+
+    // ========== إبلاغ مشكلة ==========
+    $('rp-submit').addEventListener('click', async () => {
+      const err = $('rp-error');
+      if (!$('rp-app').value || !$('rp-section').value || !$('rp-desc').value || !$('rp-email').value) {
+        err.textContent = 'املأ الحقول الإلزامية';
+        err.classList.remove('hidden');
+        return;
+      }
+      err.classList.add('hidden');
+      $('rp-submit').disabled = true;
+      try {
+        const reportId = await saveReport({
+          type: 'problem',
+          typeLabel: 'إبلاغ عن مشكلة',
+          app: $('rp-app').value,
+          section: $('rp-section').value,
+          description: $('rp-desc').value,
+          contactEmail: $('rp-email').value,
+          evidence: currentReportImages.slice(0, 5),
+          incidentDate: {
+            day: $('rp-day').value, month: $('rp-month').value, year: $('rp-year').value,
+            hour: $('rp-hour').value, minute: $('rp-minute').value
+          }
+        });
+        currentReportImages = [];
+        toast(`تم إرسال البلاغ\n${reportId}`);
+        show('screen-home');
+      } catch (e) { toast('خطأ: ' + e.message); }
+      $('rp-submit').disabled = false;
+    });
+
+    // ========== سوء رد إدارة ==========
+    $('ra-submit').addEventListener('click', async () => {
+      const err = $('ra-error');
+      if (!$('ra-app').value || !$('ra-desc').value || !$('ra-email').value) {
+        err.textContent = 'املأ الحقول الإلزامية';
+        err.classList.remove('hidden');
+        return;
+      }
+      err.classList.add('hidden');
+      $('ra-submit').disabled = true;
+      try {
+        const reportId = await saveReport({
+          type: 'admin_misconduct',
+          typeLabel: 'سوء رد من الإدارة',
+          app: $('ra-app').value,
+          adminName: $('ra-admin-name').value || null,
+          description: $('ra-desc').value,
+          replyText: $('ra-reply-text').value || null,
+          contactEmail: $('ra-email').value,
+          evidence: currentReportImages.slice(0, 5),
+          incidentTime: {
+            sec: $('ra-sec').value, min: $('ra-min').value, hour: $('ra-hour').value,
+            day: $('ra-day').value, week: $('ra-week').value, month: $('ra-month').value, year: $('ra-year').value
+          }
+        });
+        currentReportImages = [];
+        toast(`تم إرسال البلاغ\n${reportId}`);
+        show('screen-home');
+      } catch (e) { toast('خطأ: ' + e.message); }
+      $('ra-submit').disabled = false;
+    });
+
+    // ========== محتوى مخالف ==========
+    $('rc-submit').addEventListener('click', async () => {
+      const err = $('rc-error');
+      if (!$('rc-app').value || !$('rc-desc').value || !$('rc-email').value) {
+        err.textContent = 'املأ الحقول الإلزامية';
+        err.classList.remove('hidden');
+        return;
+      }
+      err.classList.add('hidden');
+      $('rc-submit').disabled = true;
+      try {
+        const reportId = await saveReport({
+          type: 'content',
+          typeLabel: 'منشور أو رسالة مخالفة',
+          contentType: $('rc-type').value,
+          violationType: $('rc-violation').value,
+          app: $('rc-app').value,
+          place: $('rc-place').value || null,
+          authorName: $('rc-author').value || null,
+          description: $('rc-desc').value,
+          link: $('rc-link').value || null,
+          contactEmail: $('rc-email').value,
+          evidence: currentReportImages.slice(0, 5)
+        });
+        currentReportImages = [];
+        toast(`تم إرسال البلاغ\n${reportId}`);
+        show('screen-home');
+      } catch (e) { toast('خطأ: ' + e.message); }
+      $('rc-submit').disabled = false;
+    });
+
+    // ========== حقوق ملكية ==========
+    $('cr-submit').addEventListener('click', async () => {
+      const err = $('cr-error');
+      const name = $('cr-manual-name').classList.contains('hidden')
+        ? $('cr-accused-name').value
+        : $('cr-manual-name').value;
+      if (!$('cr-type').value || !$('cr-owner-name').value || !name || !$('cr-app').value || !$('cr-desc').value || !$('cr-email').value) {
+        err.textContent = 'املأ الحقول الإلزامية';
+        err.classList.remove('hidden');
+        return;
+      }
+      err.classList.add('hidden');
+      $('cr-submit').disabled = true;
+      try {
+        const reportId = await saveReport({
+          type: 'copyright',
+          typeLabel: 'انتهاك حقوق الملكية',
+          violationType: $('cr-type').value,
+          ownerName: $('cr-owner-name').value,
+          ownerAccount: $('cr-owner-account').value || null,
+          accusedName: name,
+          accusedUid: $('cr-accused-uid').value || null,
+          app: $('cr-app').value,
+          originalLink: $('cr-orig-link').value || null,
+          copiedLink: $('cr-copy-link').value || null,
+          description: $('cr-desc').value,
+          contactEmail: $('cr-email').value,
+          evidence: currentReportImages.slice(0, 5)
+        });
+        // نسخ إلى copyrightReports أيضًا
+        await set(ref(db, `copyrightReports/${reportId}`), {
+          reportId,
+          createdAt: nowISO(),
+          status: 'قيد الرؤية من الإدارة',
+          reporterUid: currentUser.uid
+        });
+        currentReportImages = [];
+        toast(`تم إرسال بلاغ حقوق الملكية\n${reportId}`);
+        show('screen-home');
+      } catch (e) { toast('خطأ: ' + e.message); }
+      $('cr-submit').disabled = false;
+    });
+
+    // ========== البلاغات التي عملتها ==========
+    async function loadMyReports(filter = 'all') {
+      const list = $('my-reports-list');
+      list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      try {
+        const snap = await get(ref(db, 'reports'));
+        const items = [];
+        if (snap.exists()) {
+          snap.forEach(c => {
+            const r = c.val();
+            if (r.reporterUid === currentUser.uid) items.push(r);
+          });
+        }
+        items.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+        const filtered = filter === 'all' ? items : items.filter(r => r.status === filter);
+        if (!filtered.length) {
+          list.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>لا توجد بلاغات</p></div>';
+          return;
+        }
+        list.innerHTML = filtered.map(r => `
+          <div class="list-item" data-rid="${r.reportId}">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <strong>${r.reportId}</strong>
+              ${statusBadge(r.status)}
+            </div>
+            <div class="meta">${r.typeLabel || r.type} • ${formatDate(r.createdAt)}</div>
+            <div class="meta">${(r.description || '').slice(0, 80)}${(r.description || '').length > 80 ? '...' : ''}</div>
+          </div>
+        `).join('');
+        list.querySelectorAll('.list-item').forEach(el => {
+          el.addEventListener('click', () => openReportDetail(el.dataset.rid, 'reporter'));
+        });
+      } catch (e) {
+        list.innerHTML = '<p class="error-msg">خطأ في التحميل</p>';
+      }
+    }
+
+    document.querySelectorAll('#my-reports-tabs .tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('#my-reports-tabs .tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        loadMyReports(tab.dataset.filter);
+      });
+    });
+
+    // ========== التهم ==========
+    async function loadMyAccusations() {
+      const list = $('my-accusations-list');
+      list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      try {
+        const accSnap = await get(ref(db, `accusations/${currentUser.uid}`));
+        const items = [];
+        if (accSnap.exists()) {
+          const reportIds = Object.keys(accSnap.val());
+          for (const rid of reportIds) {
+            const rSnap = await get(ref(db, `reports/${rid}`));
+            if (rSnap.exists()) {
+              const r = rSnap.val();
+              items.push({ ...r, accStatus: accSnap.val()[rid].status });
+            }
+          }
+        }
+        // أيضًا البحث بالاسم إذا لم يكن UID
+        const allReports = await get(ref(db, 'reports'));
+        if (allReports.exists()) {
+          allReports.forEach(c => {
+            const r = c.val();
+            if (r.accusedUid === currentUser.uid && !items.some(i => i.reportId === r.reportId)) {
+              items.push(r);
+            }
+          });
+        }
+        items.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+        if (!items.length) {
+          list.innerHTML = '<div class="empty-state"><div class="icon">⚖️</div><p>لا توجد تهم موجهة إليك</p></div>';
+          return;
+        }
+        list.innerHTML = items.map(r => `
+          <div class="list-item" data-rid="${r.reportId}" style="border-right-color:var(--warning);">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <strong>${r.reportId}</strong>
+              ${statusBadge(r.status)}
+            </div>
+            <div class="meta">${r.typeLabel || r.type} • ${formatDate(r.createdAt)}</div>
+            <div class="meta">أنت المتهم في هذا البلاغ</div>
+          </div>
+        `).join('');
+        list.querySelectorAll('.list-item').forEach(el => {
+          el.addEventListener('click', () => openReportDetail(el.dataset.rid, 'accused'));
+        });
+      } catch (e) {
+        list.innerHTML = '<p class="error-msg">خطأ في التحميل</p>';
+      }
+    }
+
+    // ========== تفاصيل البلاغ ==========
+    async function openReportDetail(reportId, role) {
+      detailBackScreen = role === 'accused' ? 'my-accusations' : 'my-reports';
+      const content = $('detail-content');
+      const actions = $('detail-actions');
+      content.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      actions.classList.add('hidden');
+      show('screen-report-detail');
+      $('detail-title').textContent = reportId;
+
+      try {
+        const snap = await get(ref(db, `reports/${reportId}`));
+        if (!snap.exists()) {
+          content.innerHTML = '<p>البلاغ غير موجود</p>';
+          return;
+        }
+        const r = snap.val();
+        let html = `
+          <p><strong>رقم البلاغ:</strong> ${r.reportId}</p>
+          <p><strong>النوع:</strong> ${r.typeLabel || r.type}</p>
+          <p><strong>الحالة:</strong> ${statusBadge(r.status)}</p>
+          <p><strong>تاريخ الإنشاء:</strong> ${formatDate(r.createdAt)}</p>
+          <p><strong>صاحب البلاغ:</strong> ${role === 'accused' ? 'مخفي جزئيًا' : (r.reporterName || '—')}</p>
+        `;
+        if (r.accusedName) html += `<p><strong>المتهم:</strong> ${r.accusedName}</p>`;
+        if (r.app) html += `<p><strong>التطبيق:</strong> ${r.app}</p>`;
+        if (r.section) html += `<p><strong>القسم:</strong> ${r.section}</p>`;
+        if (r.description) html += `<p><strong>الوصف:</strong> ${r.description}</p>`;
+        if (r.link) html += `<p><strong>الرابط:</strong> <a href="${r.link}" target="_blank">${r.link}</a></p>`;
+        if (r.violationType) html += `<p><strong>نوع المخالفة:</strong> ${r.violationType}</p>`;
+        if (r.adminNote && role !== 'accused') html += `<p><strong>ملاحظة الإدارة:</strong> ${r.adminNote}</p>`;
+        if (r.friendlyRoomId) {
+          html += `<p><strong>غرفة إصلاح ودي:</strong> <button class="btn btn-sm btn-success" onclick="window.openFriendlyRoom('${r.friendlyRoomId}')">الدخول للغرفة</button></p>`;
+        }
+        if (r.evidence && r.evidence.length && (role === 'reporter' || r.showEvidenceToAccused || isAdmin)) {
+          html += `<p><strong>الأدلة:</strong></p><div class="img-thumbs">${r.evidence.map(e => `<img src="${e}" style="width:100px;height:100px;object-fit:cover;border-radius:8px;cursor:pointer;" onclick="window.open(this.src)" />`).join('')}</div>`;
+        }
+        if (r.statusHistory && role !== 'accused') {
+          html += `<h3 style="margin-top:16px;">سجل الحالات</h3>`;
+          html += (r.statusHistory || []).map(h => `<div class="meta">${formatDate(h.at)} — ${h.status} ${h.note ? '(' + h.note + ')' : ''}</div>`).join('');
+        }
+        // الطعون
+        if (r.appeals && r.appeals.length) {
+          html += `<h3 style="margin-top:16px;">الطعون</h3>`;
+          r.appeals.forEach(a => {
+            html += `<div class="preview-box"><p>${a.text}</p><div class="meta">${formatDate(a.at)}</div></div>`;
+          });
+        }
+        content.innerHTML = html;
+
+        // أزرار للمتهم
+        if (role === 'accused' && !['محلول','تم الحل','اتهام باطل','مرفوضة'].includes(r.status)) {
+          actions.classList.remove('hidden');
+          actions.innerHTML = `
+            <h3>إجراءاتك</h3>
+            <button class="btn btn-outline" id="btn-appeal">تقديم طعن / رد</button>
+            <button class="btn btn-outline" id="btn-request-friendly">طلب إصلاح ودي</button>
+          `;
+          $('btn-appeal')?.addEventListener('click', () => showAppealForm(reportId));
+          $('btn-request-friendly')?.addEventListener('click', async () => {
+            await update(ref(db, `reports/${reportId}`), {
+              accusedRequestedFriendly: true,
+              updatedAt: nowISO()
+            });
+            toast('تم إرسال طلب الإصلاح الودي للإدارة');
+          });
+        }
+      } catch (e) {
+        content.innerHTML = '<p class="error-msg">خطأ في التحميل</p>';
+      }
+    }
+
+    // تصحيح زر الرجوع في التفاصيل
+    document.querySelector('#screen-report-detail .back-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (detailBackScreen === 'my-accusations') {
+        loadMyAccusations();
+        show('screen-my-accusations');
+      } else {
+        loadMyReports();
+        show('screen-my-reports');
+      }
+    });
+
+    function showAppealForm(reportId) {
+      const body = $('modal-generic-body');
+      body.innerHTML = `
+        <h3>تقديم طعن</h3>
+        <textarea id="appeal-text" placeholder="اكتب ردك ودفاعك..."></textarea>
+        <label class="file-input-label" for="appeal-images">📷 أدلة (اختياري)</label>
+        <input type="file" id="appeal-images" accept="image/*" multiple />
+        <div class="img-thumbs" id="appeal-thumbs"></div>
+        <button class="btn btn-primary" id="appeal-submit">إرسال الطعن</button>
+        <button class="btn btn-outline" onclick="document.getElementById('modal-generic').classList.add('hidden')">إلغاء</button>
+      `;
+      showModal('modal-generic');
+      let appealImgs = [];
+      $('appeal-images').addEventListener('change', async () => {
+        appealImgs = await filesToBase64($('appeal-images').files);
+        $('appeal-thumbs').innerHTML = appealImgs.map(s => `<img src="${s}" />`).join('');
+      });
+      $('appeal-submit').addEventListener('click', async () => {
+        const text = $('appeal-text').value.trim();
+        if (!text) return toast('اكتب نص الطعن');
+        const snap = await get(ref(db, `reports/${reportId}`));
+        const r = snap.val();
+        const appeals = r.appeals || [];
+        appeals.push({
+          text,
+          evidence: appealImgs.slice(0, 3),
+          at: nowISO(),
+          by: currentUser.uid,
+          byName: userProfile.name
+        });
+        await update(ref(db, `reports/${reportId}`), {
+          appeals,
+          status: 'قيد المراجعة',
+          updatedAt: nowISO()
+        });
+        // سجل
+        await logAdminAction({
+          type: 'appeal_submitted',
+          reportId,
+          by: currentUser.uid,
+          note: 'تقديم طعن من المتهم'
+        });
+        hideModal('modal-generic');
+        toast('تم إرسال الطعن بنجاح');
+        openReportDetail(reportId, 'accused');
+      });
+    }
+
+    // ========== الشكر ==========
+    async function loadThanks() {
+      const list = $('thanks-list');
+      list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      try {
+        const snap = await get(ref(db, 'thanks'));
+        const items = [];
+        if (snap.exists()) {
+          snap.forEach(c => {
+            const t = c.val();
+            if (t.userUid === currentUser.uid) items.push({ id: c.key, ...t });
+          });
+        }
+        items.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+        if (!items.length) {
+          list.innerHTML = '<div class="empty-state"><div class="icon">❤️</div><p>لم تتلقَ رسائل شكر بعد</p></div>';
+          return;
+        }
+        list.innerHTML = items.map(t => `
+          <div class="card">
+            <h3>شكرًا لك ❤️</h3>
+            <p>${t.message || t.reason || ''}</p>
+            <div class="meta">التطبيق: ${t.app || '—'} • ${formatDate(t.workDate || t.createdAt)}</div>
+            ${t.description ? `<p style="margin-top:8px;">${t.description}</p>` : ''}
+            ${t.evidence && t.evidence[0] ? `<img class="img-preview" src="${t.evidence[0]}" />` : ''}
+          </div>
+        `).join('');
+      } catch (e) {
+        list.innerHTML = '<p class="error-msg">خطأ</p>';
+      }
+    }
+
+    // ========== غرف الإصلاح ==========
+    async function loadFriendlyRooms() {
+      const list = $('friendly-rooms-list');
+      list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      try {
+        const snap = await get(ref(db, 'friendlyRooms'));
+        const items = [];
+        if (snap.exists()) {
+          snap.forEach(c => {
+            const room = c.val();
+            if (room.accusedUid === currentUser.uid || room.reporterUid === currentUser.uid || room.adminUid === currentUser.uid || isAdmin) {
+              items.push({ id: c.key, ...room });
+            }
+          });
+        }
+        items.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+        if (!items.length) {
+          list.innerHTML = '<div class="empty-state"><div class="icon">🤝</div><p>لا توجد غرف إصلاح حالياً</p></div>';
+          return;
+        }
+        list.innerHTML = items.map(r => `
+          <div class="list-item" data-room="${r.id}">
+            <div style="display:flex;justify-content:space-between;">
+              <strong>غرفة: ${r.reportId || r.id.slice(0,8)}</strong>
+              ${statusBadge(r.status || 'نشطة')}
+            </div>
+            <div class="meta">بداية: ${formatDate(r.startAt)} ${r.duration === 'أبدية' ? '• مفتوحة' : ''}</div>
+          </div>
+        `).join('');
+        list.querySelectorAll('.list-item').forEach(el => {
+          el.addEventListener('click', () => openFriendlyChat(el.dataset.room));
+        });
+      } catch (e) {
+        list.innerHTML = '<p class="error-msg">خطأ</p>';
+      }
+    }
+
+    window.openFriendlyRoom = (roomId) => openFriendlyChat(roomId);
+
+    async function openFriendlyChat(roomId) {
+      currentChatRoomId = roomId;
+      if (chatUnsub) chatUnsub();
+      show('screen-friendly-chat');
+      const roomSnap = await get(ref(db, `friendlyRooms/${roomId}`));
+      if (!roomSnap.exists()) {
+        toast('الغرفة غير موجودة');
+        return;
+      }
+      const room = roomSnap.val();
+      $('chat-title').textContent = `إصلاح: ${room.reportId || ''}`;
+      const msgsEl = $('chat-messages');
+      msgsEl.innerHTML = '';
+
+      const msgsRef = ref(db, `friendlyMessages/${roomId}`);
+      chatUnsub = onValue(msgsRef, snap => {
+        msgsEl.innerHTML = '';
+        if (snap.exists()) {
+          const arr = [];
+          snap.forEach(c => arr.push({ id: c.key, ...c.val() }));
+          arr.sort((a, b) => (a.at || '').localeCompare(b.at || ''));
+          arr.forEach(m => {
+            const isMe = m.uid === currentUser.uid;
+            const isAdm = m.role === 'admin';
+            const div = document.createElement('div');
+            div.className = `msg ${isMe ? 'me' : 'other'} ${isAdm ? 'admin' : ''}`;
+            div.innerHTML = `<div class="sender">${m.name || ''} ${isAdm ? '(إدارة)' : ''}</div>${m.text}`;
+            msgsEl.appendChild(div);
+          });
+          msgsEl.scrollTop = msgsEl.scrollHeight;
+        }
+      });
+
+      // أزرار الإدارة داخل الغرفة
+      const adminAct = $('chat-admin-actions');
+      if (isAdmin || room.adminUid === currentUser.uid) {
+        adminAct.classList.remove('hidden');
+        adminAct.innerHTML = `
+          <button class="btn btn-success btn-sm" id="btn-resolve-room">تم الحل</button>
+          <button class="btn btn-danger btn-sm" id="btn-fail-room">لم يتم الحل</button>
+          <button class="btn btn-outline btn-sm" id="btn-extend-room">تمديد / فتح دائم</button>
+        `;
+        $('btn-resolve-room').onclick = () => resolveRoom(roomId, true);
+        $('btn-fail-room').onclick = () => resolveRoom(roomId, false);
+        $('btn-extend-room').onclick = async () => {
+          await update(ref(db, `friendlyRooms/${roomId}`), { duration: 'أبدية', status: 'نشطة' });
+          toast('تم جعل الغرفة مفتوحة');
+        };
+      } else {
+        adminAct.classList.add('hidden');
+      }
+    }
+
+    $('chat-send').addEventListener('click', async () => {
+      const text = $('chat-input').value.trim();
+      if (!text || !currentChatRoomId) return;
+      const roomSnap = await get(ref(db, `friendlyRooms/${currentChatRoomId}`));
+      const room = roomSnap.val();
+      let role = 'user';
+      if (room.adminUid === currentUser.uid || isAdmin) role = 'admin';
+      await push(ref(db, `friendlyMessages/${currentChatRoomId}`), {
+        text,
+        uid: currentUser.uid,
+        name: userProfile.name,
+        role,
+        at: nowISO()
+      });
+      $('chat-input').value = '';
+    });
+
+    $('chat-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') $('chat-send').click();
+    });
+
+    async function resolveRoom(roomId, resolved) {
+      const note = prompt(resolved ? 'ملخص الاتفاق:' : 'الإجراء الإداري الذي سيتم اتخاذه:');
+      if (note === null) return;
+      const roomSnap = await get(ref(db, `friendlyRooms/${roomId}`));
+      const room = roomSnap.val();
+      const newStatus = resolved ? 'تم الحل' : 'لم يتم الحل';
+      await update(ref(db, `friendlyRooms/${roomId}`), {
+        status: resolved ? 'مغلقة - تم الحل' : 'مغلقة - لم يتم الحل',
+        result: newStatus,
+        resultNote: note,
+        closedAt: nowISO(),
+        closedBy: currentUser.uid
+      });
+      if (room.reportId) {
+        const updates = {
+          status: newStatus,
+          updatedAt: nowISO(),
+          resolveNote: note,
+          resolvedBy: currentUser.uid,
+          resolvedAt: nowISO()
+        };
+        if (!resolved) updates.adminAction = note;
+        const rSnap = await get(ref(db, `reports/${room.reportId}`));
+        if (rSnap.exists()) {
+          const hist = rSnap.val().statusHistory || [];
+          hist.push({ status: newStatus, at: nowISO(), by: currentUser.uid, note });
+          updates.statusHistory = hist;
+        }
+        await update(ref(db, `reports/${room.reportId}`), updates);
+      }
+      await logAdminAction({
+        type: resolved ? 'friendly_resolved' : 'friendly_failed',
+        reportId: room.reportId,
+        roomId,
+        by: currentUser.uid,
+        note
+      });
+      toast(resolved ? 'تم تسجيل الحل' : 'تم تسجيل عدم الحل');
+      loadFriendlyRooms();
+      show('screen-friendly-rooms');
+    }
+
+    // ========== الزر السري ولوحة الإدارة ==========
+    $('secret-admin-btn').addEventListener('click', () => {
+      if (!currentUser) return toast('يجب تسجيل الدخول أولاً');
+      show('screen-admin-login');
+    });
+
+    // حماية إضافية: التحقق من كلمة المرور عبر مقارنة مشفرة بسيطة + Firebase
+    // لا نخزن كلمة المرور كنص صريح؛ نستخدم hash بسيط في الذاكرة
+    function simpleHash(str) {
+      let h = 0;
+      for (let i = 0; i < str.length; i++) {
+        h = ((h << 5) - h) + str.charCodeAt(i);
+        h |= 0;
+      }
+      return h;
+    }
+    // hash لكلمة youzai
+    const ADMIN_PASS_HASH = simpleHash('youzai');
+
+    $('btn-admin-login').addEventListener('click', async () => {
+      const pass = $('admin-pass').value;
+      const err = $('admin-login-error');
+      if (simpleHash(pass) !== ADMIN_PASS_HASH) {
+        err.textContent = 'كلمة المرور غير صحيحة';
+        err.classList.remove('hidden');
+        return;
+      }
+      // التحقق الحقيقي من صلاحية الإدارة في Firebase
+      const ok = await checkAdmin(currentUser.uid);
+      if (!ok) {
+        // السماح مؤقتًا إذا كان المستخدم أول إداري — أو إنشاء نفسه إن لم يوجد أحد
+        const adminsSnap = await get(ref(db, 'adminUsers'));
+        if (!adminsSnap.exists() || Object.keys(adminsSnap.val() || {}).length === 0) {
+          await set(ref(db, `adminUsers/${currentUser.uid}`), {
+            email: currentUser.email,
+            name: userProfile.name,
+            active: true,
+            createdAt: nowISO(),
+            role: 'super'
+          });
+          isAdmin = true;
+        } else {
+          err.textContent = 'ليس لديك صلاحية إدارية. تواصل مع الإدارة العليا لإضافتك في adminUsers';
+          err.classList.remove('hidden');
+          return;
+        }
+      } else {
+        isAdmin = true;
+      }
+      err.classList.add('hidden');
+      $('admin-pass').value = '';
+      show('screen-admin');
+      loadAdminTab('reports');
+    });
+
+    document.querySelectorAll('.admin-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadAdminTab(btn.dataset.atab);
+      });
+    });
+
+    async function loadAdminTab(tab) {
+      const el = $('admin-content');
+      el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+      if (tab === 'reports') await adminLoadReports(el);
+      else if (tab === 'accusations') await adminLoadAccusations(el);
+      else if (tab === 'friendly') await adminLoadFriendly(el);
+      else if (tab === 'thanks') await adminLoadThanks(el);
+      else if (tab === 'copyright') await adminLoadCopyright(el);
+      else if (tab === 'logs') await adminLoadLogs(el);
+    }
+
+    async function adminLoadReports(el) {
+      const snap = await get(ref(db, 'reports'));
+      const items = [];
+      if (snap.exists()) snap.forEach(c => items.push(c.val()));
+      items.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+      if (!items.length) {
+        el.innerHTML = '<div class="empty-state">لا توجد بلاغات</div>';
+        return;
+      }
+      el.innerHTML = items.map(r => `
+        <div class="list-item" data-rid="${r.reportId}">
+          <div style="display:flex;justify-content:space-between;">
+            <strong>${r.reportId}</strong>
+            ${statusBadge(r.status)}
+          </div>
+          <div class="meta">${r.typeLabel} • ${r.reporterName} • ${formatDate(r.createdAt)}</div>
+          <div class="meta">${(r.description || '').slice(0, 60)}...</div>
+          <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;">
+            <button class="btn btn-sm btn-outline" data-act="view" data-rid="${r.reportId}">عرض</button>
+            <button class="btn btn-sm btn-outline" data-act="status" data-rid="${r.reportId}">تغيير الحالة</button>
+            <button class="btn btn-sm btn-success" data-act="friendly" data-rid="${r.reportId}">غرفة إصلاح</button>
+          </div>
+        </div>
+      `).join('');
+      el.querySelectorAll('[data-act]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const act = btn.dataset.act;
+          const rid = btn.dataset.rid;
+          if (act === 'view') adminViewReport(rid);
+          if (act === 'status') adminChangeStatus(rid);
+          if (act === 'friendly') adminCreateFriendly(rid);
+        });
+      });
+    }
+
+    async function adminViewReport(rid) {
+      const snap = await get(ref(db, `reports/${rid}`));
+      if (!snap.exists()) return;
+      const r = snap.val();
+      const body = $('modal-generic-body');
+      body.innerHTML = `
+        <h3>${rid}</h3>
+        <p><strong>النوع:</strong> ${r.typeLabel}</p>
+        <p><strong>الحالة:</strong> ${r.status}</p>
+        <p><strong>صاحب البلاغ:</strong> ${r.reporterName} (${r.reporterEmail})</p>
+        <p><strong>المتهم:</strong> ${r.accusedName || '—'}</p>
+        <p><strong>الوصف:</strong> ${r.description || ''}</p>
+        ${r.evidence ? r.evidence.map(e => `<img class="img-preview" src="${e}" />`).join('') : ''}
+        ${r.appeals ? `<h4>الطعون</h4>${r.appeals.map(a => `<div class="preview-box">${a.text}</div>`).join('')}` : ''}
+        <button class="btn btn-outline" onclick="document.getElementById('modal-generic').classList.add('hidden')">إغلاق</button>
+      `;
+      showModal('modal-generic');
+    }
+
+    function adminChangeStatus(rid) {
+      const statuses = [
+        'قيد الرؤية من الإدارة',
+        'قيد المراجعة',
+        'محلول',
+        'مرفوضة',
+        'اتهام باطل',
+        'يجب عمل إصلاح ودي',
+        'يجب استدعاء المتهم قانونيًا',
+        'تم الحل',
+        'لم يتم الحل',
+        'تم اتخاذ إجراء'
+      ];
+      const body = $('modal-generic-body');
+      body.innerHTML = `
+        <h3>تغيير حالة ${rid}</h3>
+        <select id="new-status">${statuses.map(s => `<option value="${s}">${s}</option>`).join('')}</select>
+        <label>ملاحظة / سبب</label>
+        <textarea id="status-note"></textarea>
+        <button class="btn btn-primary" id="confirm-status">تأكيد</button>
+        <button class="btn btn-outline" onclick="document.getElementById('modal-generic').classList.add('hidden')">إلغاء</button>
+      `;
+      showModal('modal-generic');
+      $('confirm-status').onclick = async () => {
+        const newStatus = $('new-status').value;
+        const note = $('status-note').value;
+        const snap = await get(ref(db, `reports/${rid}`));
+        const r = snap.val();
+        const hist = r.statusHistory || [];
+        hist.push({ status: newStatus, at: nowISO(), by: currentUser.uid, byName: userProfile.name, note });
+        await update(ref(db, `reports/${rid}`), {
+          status: newStatus,
+          statusHistory: hist,
+          updatedAt: nowISO(),
+          adminNote: note || r.adminNote
+        });
+        if (r.accusedUid) {
+          await update(ref(db, `accusations/${r.accusedUid}/${rid}`), { status: newStatus });
+        }
+        await logAdminAction({
+          type: 'status_change',
+          reportId: rid,
+          by: currentUser.uid,
+          oldStatus: r.status,
+          newStatus,
+          note
+        });
+        hideModal('modal-generic');
+        toast('تم تحديث الحالة');
+        loadAdminTab('reports');
+      };
+    }
+
+    function adminCreateFriendly(rid) {
+      const body = $('modal-generic-body');
+      body.innerHTML = `
+        <h3>إنشاء غرفة إصلاح ودي</h3>
+        <p>بلاغ: ${rid}</p>
+        <label>مدة الغرفة</label>
+        <select id="room-duration">
+          <option value="30">30 دقيقة</option>
+          <option value="60">ساعة</option>
+          <option value="120">ساعتان</option>
+          <option value="أبدية">أبدية / مفتوحة</option>
+        </select>
+        <button class="btn btn-primary" id="confirm-room">إنشاء الغرفة</button>
+        <button class="btn btn-outline" onclick="document.getElementById('modal-generic').classList.add('hidden')">إلغاء</button>
+      `;
+      showModal('modal-generic');
+      $('confirm-room').onclick = async () => {
+        const snap = await get(ref(db, `reports/${rid}`));
+        if (!snap.exists()) return;
+        const r = snap.val();
+        const roomRef = push(ref(db, 'friendlyRooms'));
+        const roomId = roomRef.key;
+        const duration = $('room-duration').value;
+        await set(roomRef, {
+          reportId: rid,
+          accusedUid: r.accusedUid || null,
+          accusedName: r.accusedName || null,
+          reporterUid: r.reporterUid,
+          reporterName: r.reporterName,
+          adminUid: currentUser.uid,
+          adminName: userProfile.name,
+          startAt: nowISO(),
+          duration,
+          status: 'نشطة',
+          createdAt: nowISO()
+        });
+        await update(ref(db, `reports/${rid}`), {
+          status: 'يجب عمل إصلاح ودي',
+          friendlyRoomId: roomId,
+          updatedAt: nowISO()
+        });
+        // إشعارات
+        if (r.accusedUid) {
+          await push(ref(db, `notifications/${r.accusedUid}`), {
+            type: 'friendly_invite',
+            message: 'دعوة إلى الإصلاح الودي',
+            roomId,
+            reportId: rid,
+            at: nowISO(),
+            read: false
+          });
+        }
+        await push(ref(db, `notifications/${r.reporterUid}`), {
+          type: 'friendly_invite',
+          message: 'تم دعوتك إلى غرفة إصلاح ودي',
+          roomId,
+          reportId: rid,
+          at: nowISO(),
+          read: false
+        });
+        await logAdminAction({ type: 'create_friendly_room', reportId: rid, roomId, by: currentUser.uid });
+        hideModal('modal-generic');
+        toast('تم إنشاء غرفة الإصلاح الودي');
+        loadAdminTab('friendly');
+      };
+    }
+
+    async function adminLoadAccusations(el) {
+      const snap = await get(ref(db, 'reports'));
+      const items = [];
+      if (snap.exists()) {
+        snap.forEach(c => {
+          const r = c.val();
+          if (r.accusedUid || r.accusedName) items.push(r);
+        });
+      }
+      items.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+      el.innerHTML = items.length ? items.map(r => `
+        <div class="list-item">
+          <strong>${r.reportId}</strong> ${statusBadge(r.status)}
+          <div class="meta">المتهم: ${r.accusedName || r.accusedUid} • ${formatDate(r.createdAt)}</div>
+          <button class="btn btn-sm btn-outline" data-act="status" data-rid="${r.reportId}">تغيير الحالة</button>
+        </div>
+      `).join('') : '<div class="empty-state">لا توجد اتهامات</div>';
+      el.querySelectorAll('[data-act="status"]').forEach(b => {
+        b.onclick = () => adminChangeStatus(b.dataset.rid);
+      });
+    }
+
+    async function adminLoadFriendly(el) {
+      const snap = await get(ref(db, 'friendlyRooms'));
+      const items = [];
+      if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
+      items.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+      el.innerHTML = `
+        <p style="margin-bottom:12px;">يمكنك إنشاء غرفة من تبويب البلاغات</p>
+        ${items.length ? items.map(r => `
+          <div class="list-item">
+            <strong>${r.reportId || r.id.slice(0,8)}</strong> ${statusBadge(r.status)}
+            <div class="meta">${formatDate(r.startAt)} • المدة: ${r.duration}</div>
+            <button class="btn btn-sm btn-primary" data-room="${r.id}">فتح الغرفة</button>
+          </div>
+        `).join('') : '<div class="empty-state">لا توجد غرف</div>'}
+      `;
+      el.querySelectorAll('[data-room]').forEach(b => {
+        b.onclick = () => openFriendlyChat(b.dataset.room);
+      });
+    }
+
+    async function adminLoadThanks(el) {
+      el.innerHTML = `
+        <div class="card">
+          <h3>إنشاء رسالة شكر</h3>
+          <label>UID أو بحث عن المستخدم</label>
+          <input type="text" id="th-uid" placeholder="UID المستخدم" />
+          <label>اسم المستخدم (عرض)</label>
+          <input type="text" id="th-name" />
+          <label>التطبيق</label>
+          <select id="th-app">
+            <option>YMM Chat</option><option>YMM Community</option><option>YMM Store</option><option>YMM Live</option>
+          </select>
+          <label>سبب الشكر / الرسالة *</label>
+          <textarea id="th-msg"></textarea>
+          <label>وصف العمل</label>
+          <textarea id="th-desc"></textarea>
+          <label>تاريخ العمل</label>
+          <input type="date" id="th-date" />
+          <label class="file-input-label" for="th-img">📷 دليل العمل</label>
+          <input type="file" id="th-img" accept="image/*" />
+          <button class="btn btn-success" id="th-send">إرسال الشكر</button>
+        </div>
+        <div id="th-list"></div>
+      `;
+      let thImg = [];
+      $('th-img').onchange = async () => { thImg = await filesToBase64($('th-img').files); };
+      $('th-send').onclick = async () => {
+        const uid = $('th-uid').value.trim();
+        const msg = $('th-msg').value.trim();
+        if (!uid || !msg) return toast('أدخل UID والرسالة');
+        await push(ref(db, 'thanks'), {
+          userUid: uid,
+          userName: $('th-name').value || '',
+          app: $('th-app').value,
+          message: msg,
+          description: $('th-desc').value || '',
+          workDate: $('th-date').value || null,
+          evidence: thImg.slice(0, 2),
+          createdAt: nowISO(),
+          byAdmin: currentUser.uid,
+          byName: userProfile.name
+        });
+        await push(ref(db, `notifications/${uid}`), {
+          type: 'thanks',
+          message: 'وصلك شكر رسمي من الإدارة ❤️',
+          at: nowISO(),
+          read: false
+        });
+        await logAdminAction({ type: 'create_thanks', by: currentUser.uid, note: uid });
+        toast('تم إرسال الشكر');
+        loadAdminTab('thanks');
+      };
+      // قائمة
+      const snap = await get(ref(db, 'thanks'));
+      const list = [];
+      if (snap.exists()) snap.forEach(c => list.push(c.val()));
+      $('th-list').innerHTML = list.slice(-20).reverse().map(t => `
+        <div class="list-item"><strong>${t.userName || t.userUid}</strong><div class="meta">${t.message}</div></div>
+      `).join('') || '';
+    }
+
+    async function adminLoadCopyright(el) {
+      const snap = await get(ref(db, 'reports'));
+      const items = [];
+      if (snap.exists()) {
+        snap.forEach(c => {
+          const r = c.val();
+          if (r.type === 'copyright') items.push(r);
+        });
+      }
+      el.innerHTML = items.length ? items.map(r => `
+        <div class="list-item">
+          <strong>${r.reportId}</strong> ${statusBadge(r.status)}
+          <div class="meta">${r.violationType} • ${formatDate(r.createdAt)}</div>
+          <button class="btn btn-sm btn-outline" data-act="status" data-rid="${r.reportId}">تغيير الحالة</button>
+          <button class="btn btn-sm btn-outline" data-act="view" data-rid="${r.reportId}">عرض</button>
+        </div>
+      `).join('') : '<div class="empty-state">لا توجد بلاغات حقوق ملكية</div>';
+      el.querySelectorAll('[data-act]').forEach(b => {
+        b.onclick = () => {
+          if (b.dataset.act === 'status') adminChangeStatus(b.dataset.rid);
+          else adminViewReport(b.dataset.rid);
+        };
+      });
+    }
+
+    async function adminLoadLogs(el) {
+      const snap = await get(ref(db, 'adminActions'));
+      const items = [];
+      if (snap.exists()) snap.forEach(c => items.push({ id: c.key, ...c.val() }));
+      items.sort((a, b) => (b.at || '').localeCompare(a.at || ''));
+      el.innerHTML = items.length ? items.slice(0, 100).map(l => `
+        <div class="list-item" style="border-right-color:var(--muted);">
+          <strong>${l.type}</strong>
+          <div class="meta">${formatDate(l.at)} • بواسطة: ${l.byName || l.by}</div>
+          <div class="meta">${l.reportId || ''} ${l.note || ''} ${l.oldStatus ? l.oldStatus + ' → ' + l.newStatus : ''}</div>
+        </div>
+      `).join('') : '<div class="empty-state">لا يوجد سجل بعد</div>';
+    }
+
+    async function logAdminAction(data) {
+      await push(ref(db, 'adminActions'), {
+        ...data,
+        byName: userProfile?.name || '',
+        at: nowISO()
+      });
+    }
+
+    // منع حذف سجل العمليات بسهولة — لا نوفر واجهة حذف
+
+  </script>
+</body>
+</html>
