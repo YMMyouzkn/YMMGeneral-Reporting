@@ -1,0 +1,151 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "users": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid == $uid || root.child('adminUsers').child(auth.uid).val() === true)",
+        ".write": "auth != null && (auth.uid == $uid || root.child('adminUsers').child(auth.uid).val() === true)",
+        ".validate": "newData.hasChildren(['uid', 'email'])"
+      },
+      ".read": "auth != null"
+    },
+
+    "reports": {
+      "$reportId": {
+        ".read": "auth != null && (
+          data.child('reporterUid').val() === auth.uid ||
+          data.child('accusedUid').val() === auth.uid ||
+          root.child('adminUsers').child(auth.uid).val() === true
+        )",
+        ".write": "auth != null && (
+          (!data.exists() && newData.child('reporterUid').val() === auth.uid) ||
+          root.child('adminUsers').child(auth.uid).val() === true ||
+          (data.exists() && data.child('accusedUid').val() === auth.uid && newData.child('appeals').exists())
+        )"
+      },
+      ".read": "auth != null && root.child('adminUsers').child(auth.uid).val() === true",
+      ".indexOn": ["reporterUid", "accusedUid", "status", "type", "createdAt"]
+    },
+
+    "accusations": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid == $uid || root.child('adminUsers').child(auth.uid).val() === true)",
+        ".write": "auth != null && (
+          root.child('adminUsers').child(auth.uid).val() === true ||
+          root.child('reports').child(newData.child('reportId').val()).child('reporterUid').val() === auth.uid
+        )"
+      }
+    },
+
+    "appeals": {
+      "$reportId": {
+        ".read": "auth != null && (
+          root.child('reports').child($reportId).child('reporterUid').val() === auth.uid ||
+          root.child('reports').child($reportId).child('accusedUid').val() === auth.uid ||
+          root.child('adminUsers').child(auth.uid).val() === true
+        )",
+        ".write": "auth != null && (
+          root.child('reports').child($reportId).child('accusedUid').val() === auth.uid ||
+          root.child('adminUsers').child(auth.uid).val() === true
+        )"
+      }
+    },
+
+    "thanks": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid == $uid || root.child('adminUsers').child(auth.uid).val() === true)",
+        ".write": "auth != null && root.child('adminUsers').child(auth.uid).val() === true"
+      },
+      ".read": "auth != null && root.child('adminUsers').child(auth.uid).val() === true"
+    },
+
+    "friendlyRooms": {
+      "$roomId": {
+        ".read": "auth != null && (
+          data.child('accusedUid').val() === auth.uid ||
+          data.child('reporterUid').val() === auth.uid ||
+          data.child('adminUid').val() === auth.uid ||
+          root.child('adminUsers').child(auth.uid).val() === true
+        )",
+        ".write": "auth != null && root.child('adminUsers').child(auth.uid).val() === true"
+      },
+      ".read": "auth != null && root.child('adminUsers').child(auth.uid).val() === true"
+    },
+
+    "friendlyMessages": {
+      "$roomId": {
+        ".read": "auth != null && (
+          root.child('friendlyRooms').child($roomId).child('accusedUid').val() === auth.uid ||
+          root.child('friendlyRooms').child($roomId).child('reporterUid').val() === auth.uid ||
+          root.child('friendlyRooms').child($roomId).child('adminUid').val() === auth.uid ||
+          root.child('adminUsers').child(auth.uid).val() === true
+        )",
+        ".write": "auth != null && (
+          root.child('friendlyRooms').child($roomId).child('accusedUid').val() === auth.uid ||
+          root.child('friendlyRooms').child($roomId).child('reporterUid').val() === auth.uid ||
+          root.child('friendlyRooms').child($roomId).child('adminUid').val() === auth.uid ||
+          root.child('adminUsers').child(auth.uid).val() === true
+        )"
+      }
+    },
+
+    "copyrightReports": {
+      "$id": {
+        ".read": "auth != null && (
+          data.child('reporterUid').val() === auth.uid ||
+          root.child('adminUsers').child(auth.uid).val() === true
+        )",
+        ".write": "auth != null && (
+          (!data.exists() && newData.child('reporterUid').val() === auth.uid) ||
+          root.child('adminUsers').child(auth.uid).val() === true
+        )"
+      },
+      ".read": "auth != null && root.child('adminUsers').child(auth.uid).val() === true"
+    },
+
+    "notifications": {
+      "admin": {
+        ".read": "auth != null && root.child('adminUsers').child(auth.uid).val() === true",
+        ".write": "auth != null"
+      },
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && (auth.uid == $uid || root.child('adminUsers').child(auth.uid).val() === true)"
+      }
+    },
+
+    "adminUsers": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid == $uid || root.child('adminUsers').child(auth.uid).val() === true)",
+        ".write": false
+      },
+      ".read": "auth != null && root.child('adminUsers').child(auth.uid).val() === true"
+    },
+
+    "adminActions": {
+      ".read": "auth != null && root.child('adminUsers').child(auth.uid).val() === true",
+      ".write": "auth != null && root.child('adminUsers').child(auth.uid).val() === true",
+      ".indexOn": ["at", "reportId", "by"]
+    },
+
+    "statusHistory": {
+      "$reportId": {
+        ".read": "auth != null && (
+          root.child('reports').child($reportId).child('reporterUid').val() === auth.uid ||
+          root.child('reports').child($reportId).child('accusedUid').val() === auth.uid ||
+          root.child('adminUsers').child(auth.uid).val() === true
+        )",
+        ".write": "auth != null && root.child('adminUsers').child(auth.uid).val() === true"
+      }
+    },
+
+    "counters": {
+      "reports": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    }
+  }
+}
